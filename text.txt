@@ -1,3 +1,2 @@
-linea numero 1 
-parte numero 2
-plaza numero 3
+linea numero 1
+parte numero

@@ -13,60 +13,87 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-#define BUFFER 100
+#define BUFFER 500 // Tamaño de búfer de lectura
 
-int counter(char *str)
+size_t	ft_strlen(const char *str)
+{
+	size_t	i;
+
+	i = 0;
+	while (str[i] != 0)
+		i++;
+	return (i);
+}
+
+void ft_realloc(char **res, char *save)
 {
     int i;
+    int j;
+    char *new;
 
     i = 0;
-    while (str[i] && str[i] != '\n')
-        i++;
-    if (str[i] == '\n')
-        i++;
-    str[i] = '\0';
-    return(i);
+    j = 0;
+    if (!*res)
+    {
+        *res = malloc(BUFFER + 1 * sizeof(char));
+        if (!res)
+            return ;
+        while (i <= BUFFER && save[i] != '\n')
+        {
+            (*res)[i] = save[i];
+            i++;
+        }
+        return ;
+    }
+    i = ft_strlen(res[0]);
+    new = malloc((i + BUFFER) * sizeof(char));
+    if (!new)
+        return ;
+     while ((*res)[j] != '\0')
+    {
+        new[j] = (*res)[j];
+        j++;
+    }
+    j = 0;
+    while (save[j] != '\0' && save[j] != '\n')
+    {
+        new[i++] = save[j++];
+    }
+    new[i] = '\0';
+    free(*res);
+    *res = new;
 }
 
 char *get_next_line(int fd)
 {
-    static char *buff;
+    static char save[BUFFER];
     char *res;
-    int len_line;
-    int i;
-    
-        buff = malloc(BUFFER * sizeof(char));
-        if (!buff)
-            return (NULL);
-        read(fd, buff, BUFFER);
 
-    len_line = counter(buff);
-    i = 0;
-    res = malloc(i * sizeof(char));
-    while (len_line--)
-        res[i++] = *buff++;
-    res[i] = '\0';
-    buff++;
-    return (res);
+    res = NULL;
+    if (fd < 0 || BUFFER <= 0 || read(fd, &save, 0) < 0)
+        return (NULL);
+    while (read(fd, save, BUFFER) > 0)
+        ft_realloc(&res, save);
+    return(res);
 }
-
-
 
 int main()
 {
-   int fd;
-   fd = open("text.txt", O_RDONLY);
-   char *res;
+    int fd = open("text.txt", O_RDONLY);
+    if (fd < 0)
+    {
+        perror("Error al abrir el archivo");
+        return 1;
+    }
 
-    res = get_next_line(fd);
-    printf("\nlinea[1] = %s\n", res);
-     res = get_next_line(fd);
-     free(res);
-    printf("\nlinea[2] = %s\n", res);
-     res = get_next_line(fd);
-     free(res);
-    printf("\nlinea[3] = %s\n", res);
-    free(res);
-   close(fd);
-   return (0);
+    char *line;
+    line = get_next_line(fd);
+    printf("linea: %s\n", line);
+     line = get_next_line(fd);
+    printf("linea: %s\n", line);
+    free(line);
+    
+
+    close(fd);
+    return 0;
 }
