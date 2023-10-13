@@ -39,14 +39,15 @@ void ft_move(char *save, char **res, int *i)
     j = 0;
     if (!*res)
     {
-        *res = malloc((BUFFER + 1) * sizeof(char));
+        *res = malloc((BUFFER + 2) * sizeof(char));
         if (!*(res))
         return ;
-        while (save[j] != '\0' && save[j] != '\n')
+        while (save != '\0' && *save != '\n')
         {
-            (*res)[*i] = save[j++];
+            (*res)[*i] = *save++;
             (*i)++;
         }
+        (*res)[(*i)++] = '\n';
         (*res)[*i] = '\0';
         return ;
     }
@@ -57,10 +58,10 @@ void ft_move(char *save, char **res, int *i)
         j++;
     }
     j = 0;
-     while (save[j] != '\0' && save[j] != '\n')
+     while (save != '\0' && *save != '\n')
     {
-        new[*i] = save[j];
-        j++;
+        new[*i] = *save;
+        save++;
         (*i)++;
     }
     new[*i] = '\0';
@@ -70,7 +71,7 @@ void ft_move(char *save, char **res, int *i)
 
 char *get_next_line(int fd)
 {
-    static char *save; // par
+    static char *save;
     char *res; 
     int i;
     int chars;
@@ -79,15 +80,15 @@ char *get_next_line(int fd)
     res = NULL;
     if(!save)
         save = malloc(BUFFER * sizeof(char));
-    if (save)
+    if (*save != '\0')
         ft_move(save, &res, &i);
     while (!ft_strchr(save, '\n'))
     {
-        read(fd, save, BUFFER);
+        chars = read(fd, save, BUFFER);
         ft_move(save, &res, &i);
     }
-    printf("\nchars = %d\n", chars);
     save = ft_strchr(save, '\n') + 1;
+    printf("read = %d\n", chars);
     return (res);
 }
 
@@ -100,9 +101,9 @@ int main()
         return 1;
     }
     char *line;
-    for (size_t i = 0; i < 5; i++)
+     for (size_t i = 0; i < 5; i++)
     {
-         line = get_next_line(fd);
+         line = get_next_line(fd); ->
         printf("linea: %s\n", line);
     }
     close(fd);
