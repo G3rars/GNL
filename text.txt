@@ -1,2 +1,4 @@
-linea numero 1
-parte numero
+linea numero 1 perro
+parte numero 2
+otra cosa 
+hola soy yo
