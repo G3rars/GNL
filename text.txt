@@ -1,5 +1,2 @@
-linea numero 1 perro
+linea numero 1
 parte numero 2
-otra cosa
-hola soy yo
-buenas tardes
